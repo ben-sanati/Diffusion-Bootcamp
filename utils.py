@@ -245,50 +245,22 @@ def animate_random_transport_pairs(
         "Random source-target transport pair"
     )
 
+    pairs = np.random.randint(0, n_samples, size=150)
 
     def update(frame):
 
-        # choose random pair
-
-        i = np.random.randint(
-            n_samples
-        )
-
+        i = pairs[frame]
 
         x0 = source_points[i]
-
         x1 = target_points[i]
 
-
-        # highlight selected points
-
-        source_selected.set_offsets(
-            x0
-        )
-
-        target_selected.set_offsets(
-            x1
-        )
-
-
-        # draw transport path
+        source_selected.set_offsets([x0])
+        target_selected.set_offsets([x1])
 
         line.set_data(
-            [
-                x0[0],
-                x1[0]
-            ],
-            [
-                x0[1],
-                x1[1]
-            ]
+            [x0[0], x1[0]],
+            [x0[1], x1[1]]
         )
-
-
-        title.set_text(
-            "Random transport path sampled"
-        )
-
 
         return (
             source_selected,
@@ -302,9 +274,8 @@ def animate_random_transport_pairs(
         update,
         frames=150,
         interval=interval,
-        blit=False
+        blit=True
     )
-
 
     plt.close()
 
