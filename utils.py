@@ -302,12 +302,10 @@ def animate_random_transport_pairs(
         update,
         frames=150,
         interval=interval,
-        blit=True
+        blit=False
     )
 
 
     plt.close()
 
-    return HTML(
-        ani.to_jshtml()
-    )
+    return ani
