@@ -152,7 +152,7 @@ def animate_random_transport_pairs(
     source,
     target,
     n_samples=100,
-    interval=50
+    interval=500
 ):
 
     fig, ax = plt.subplots(
