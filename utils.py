@@ -152,7 +152,7 @@ def animate_random_transport_pairs(
     source,
     target,
     n_samples=100,
-    interval=100
+    interval=50
 ):
 
     fig, ax = plt.subplots(
@@ -300,7 +300,7 @@ def animate_random_transport_pairs(
     ani = FuncAnimation(
         fig,
         update,
-        frames=100,
+        frames=150,
         interval=interval,
         blit=True
     )
