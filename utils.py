@@ -184,7 +184,7 @@ def kde(grid_size, x_rot, y_rot, xlim, ylim):
     positions = np.vstack([kde_xx.ravel(), kde_yy.ravel()])
     
     sample_points = np.vstack([x_rot, y_rot])
-    kernel = scipy.stats.gaussian_kde(sample_points)
+    kernel = gaussian_kde(sample_points)
     z = np.reshape(kernel(positions), kde_xx.shape)
     
     plt.contourf(
