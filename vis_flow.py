@@ -419,3 +419,77 @@ def animate_vector_field(
     return HTML(
         ani.to_jshtml()
     )
+
+
+def animate_pixel_colour(rainbow_centroids):
+    single_source_color = np.random.rand(3) # Shape (3,) for R, G, B
+    
+    target_idx = np.random.randint(0, len(rainbow_centroids))
+    single_target_color = rainbow_centroids[target_idx] # Shape (3,)
+    
+    n_anim_steps_pixel = 100
+    trajectory_single_pixel_colors = []
+    for i in range(n_anim_steps_pixel):
+      t = i / (n_anim_steps_pixel - 1)
+      interp_color = (1 - t) * single_source_color + t * single_target_color
+      interp_color = np.clip(interp_color, 0, 1) # Ensure RGB values are within [0, 1]
+      trajectory_single_pixel_colors.append(interp_color)
+    trajectory_single_pixel_colors = np.array(trajectory_single_pixel_colors) # Convert list to numpy array (n_steps, 3)
+    
+    fig = plt.figure(figsize=(12, 6))
+    fig.suptitle("Single Pixel Color Transformation (Pixel & RGB Path)", fontsize=16)
+    
+    ax_pixel = fig.add_subplot(121)
+    ax_pixel.set_title("Current Pixel Color", fontsize=14)
+    pixel_display = ax_pixel.imshow([trajectory_single_pixel_colors[0].reshape(1, -1)], extent=[0, 1, 0, 1], interpolation='nearest') # Display 1x1 pixel
+    ax_pixel.axis('off') # Hide axes for a clean pixel display
+    
+    ax_3d = fig.add_subplot(122, projection='3d')
+    ax_3d.set_title("Color Path in RGB Space", fontsize=14)
+    ax_3d.set_xlabel("Red")
+    ax_3d.set_ylabel("Green")
+    ax_3d.set_zlabel("Blue")
+    ax_3d.set_xlim([0, 1])
+    ax_3d.set_ylim([0, 1])
+    ax_3d.set_zlim([0, 1])
+    ax_3d.set_box_aspect([1,1,1]) # Equal aspect ratio for 3D plot
+    
+    path_line, = ax_3d.plot([], [], [], color='lightgray', linestyle='-', alpha=0.8, linewidth=2, label='Path Traced')
+    
+    current_point_3d, = ax_3d.plot([trajectory_single_pixel_colors[0, 0]],
+                                  [trajectory_single_pixel_colors[0, 1]],
+                                  [trajectory_single_pixel_colors[0, 2]],
+                                  marker='o', markersize=10, color=trajectory_single_pixel_colors[0], label='Current Color')
+    
+    ax_3d.scatter([single_source_color[0]], [single_source_color[1]], [single_source_color[2]],
+                color='black', marker='X', s=150, label='Source Color', linewidths=2)
+    ax_3d.scatter([single_target_color[0]], [single_target_color[1]], [single_target_color[2]],
+                color='white', marker='*', s=200, label='Target Color', edgecolors='black', linewidths=1)
+    ax_3d.legend()
+    
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95]) # Adjust layout to prevent title overlap
+    
+    def update_single_pixel_combined_anim(frame):
+      current_rgb = trajectory_single_pixel_colors[frame]
+    
+      pixel_display.set_data([current_rgb.reshape(1, -1)]) # Reshape for imshow (1, 3)
+      pixel_display.set_cmap(plt.cm.colors.ListedColormap([current_rgb])) # Update colormap for correct display
+    
+      traced_path = trajectory_single_pixel_colors[:frame+1]
+      path_line.set_data_3d(traced_path[:, 0], traced_path[:, 1], traced_path[:, 2])
+    
+      current_point_3d.set_data_3d([current_rgb[0]], [current_rgb[1]], [current_rgb[2]])
+      current_point_3d.set_color(current_rgb)
+    
+      return pixel_display, path_line, current_point_3d
+    
+    animation_single_pixel_combined = FuncAnimation(
+      fig,
+      update_single_pixel_combined_anim,
+      frames=n_anim_steps_pixel,
+      interval=50,
+      blit=False # Blit is often tricky with 3D and dynamic elements, set to False
+    )
+    
+    plt.close(fig) # Prevent static plot from showing twice
+    return HTML(animation_single_pixel_combined.to_jshtml())
