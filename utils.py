@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from sklearn.datasets import make_moons
 from sklearn.neighbors import NearestNeighbors
 from scipy.optimize import linear_sum_assignment
+from scipy.stats import gaussian_kde
 from matplotlib.animation import FuncAnimation
 
 
@@ -176,19 +177,16 @@ def sample_dice(number_of_samples=1000, number_of_dice=1):
     plt.show()
 
 def kde(grid_size, x_rot, y_rot, xlim, ylim):
-  # 1. Create the grid
     kde_xx, kde_yy = np.mgrid[
         xlim[0]:xlim[1]:complex(grid_size),
         ylim[0]:ylim[1]:complex(grid_size)
     ]
     positions = np.vstack([kde_xx.ravel(), kde_yy.ravel()])
     
-    # 2. Fit the Scipy Gaussian KDE
     sample_points = np.vstack([x_rot, y_rot])
     kernel = scipy.stats.gaussian_kde(sample_points)
     z = np.reshape(kernel(positions), kde_xx.shape)
     
-    # 3. Plot filled contours with matching styling
     plt.contourf(
         kde_xx,
         kde_yy,
