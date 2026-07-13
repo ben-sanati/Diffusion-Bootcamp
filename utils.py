@@ -203,103 +203,101 @@ def animate_random_transport_pairs(
     n_samples=100,
     interval=500
 ):
+    fig, ax = plt.subplots(figsize=(6, 6))
 
-    fig, ax = plt.subplots(
-        figsize=(6,6)
+    # Set explicit axis limits first to define the KDE grid bounds
+    xlim = (-4, 4)
+    ylim = (-4, 4)
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
+    # --- Add Target KDE Background ---
+    # Generate grid for KDE evaluation
+    grid_size = 100
+    kde_xx, kde_yy = np.mgrid[
+        xlim[0]:xlim[1]:complex(grid_size),
+        ylim[0]:ylim[1]:complex(grid_size)
+    ]
+    positions = np.vstack([kde_xx.ravel(), kde_yy.ravel()])
+    
+    # Calculate KDE using all available target points for accuracy
+    kernel = gaussian_kde(target.T)
+    z = np.reshape(kernel(positions), kde_xx.shape)
+    
+    # Render transparent, matching color contour background
+    ax.contourf(
+        kde_xx,
+        kde_yy,
+        z,
+        levels=15,
+        cmap="Blues",
+        alpha=0.25,
+        zorder=0
     )
+    # ---------------------------------
 
-
-    # randomly choose displayed examples
-    source_idx = np.random.choice(
-        len(source),
-        n_samples,
-        replace=False
-    )
-
-    target_idx = np.random.choice(
-        len(target),
-        n_samples,
-        replace=False
-    )
-
+    # Randomly choose displayed examples
+    source_idx = np.random.choice(len(source), n_samples, replace=False)
+    target_idx = np.random.choice(len(target), n_samples, replace=False)
 
     source_points = source[source_idx]
     target_points = target[target_idx]
 
-
     # Source distribution
     source_scatter = ax.scatter(
-        source_points[:,0],
-        source_points[:,1],
+        source_points[:, 0],
+        source_points[:, 1],
         facecolors="none",
         edgecolors="black",
         s=50,
-        label="Source"
+        label="Source",
+        zorder=1
     )
-
 
     # Target distribution
     target_scatter = ax.scatter(
-        target_points[:,0],
-        target_points[:,1],
+        target_points[:, 0],
+        target_points[:, 1],
         facecolors="none",
         edgecolors="blue",
         s=50,
-        label="Target"
+        label="Target",
+        zorder=2
     )
 
-
     # Selected points
-
     source_selected = ax.scatter(
-        [],
-        [],
+        [], [],
         color="red",
         s=80,
         zorder=5
     )
 
     target_selected = ax.scatter(
-        [],
-        [],
+        [], [],
         color="red",
         s=80,
         zorder=5
     )
 
-
     # Transport line
-
     line, = ax.plot(
-        [],
-        [],
+        [], [],
         color="red",
         linewidth=2,
         zorder=4
     )
 
-
-    ax.set_xlim(-4,4)
-    ax.set_ylim(-4,4)
-
     ax.set_aspect("equal")
-
     ax.set_xticks([])
     ax.set_yticks([])
+    ax.legend(loc="upper left")
 
-    ax.legend()
-
-
-    title = ax.set_title(
-        "Random source-target transport pair"
-    )
-
+    ax.set_title("Random source-target transport pair")
     pairs = np.random.randint(0, n_samples, size=150)
 
     def update(frame):
-
         i = pairs[frame]
-
         x0 = source_points[i]
         x1 = target_points[i]
 
@@ -317,7 +315,6 @@ def animate_random_transport_pairs(
             line
         )
 
-
     ani = FuncAnimation(
         fig,
         update,
@@ -327,5 +324,4 @@ def animate_random_transport_pairs(
     )
 
     plt.close()
-
     return ani
