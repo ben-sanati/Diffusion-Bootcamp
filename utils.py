@@ -148,6 +148,34 @@ def plot_field(history, source, target):
     return fig, (ax1, ax2), grid, particle_plot, arrow_plot
 
 
+def sample_dice(number_of_samples=1000, number_of_dice=1):
+    rolls = np.random.randint(1, 7, size=(number_of_samples, number_of_dice))
+    samples = np.sum(rolls, axis=1)
+
+    theoretical_mean = number_of_dice * 3.5
+    theoretical_variance = number_of_dice * (35 / 12)
+
+    plt.figure(figsize=(10, 5))
+    min_possible = number_of_dice
+    max_possible = number_of_dice * 6
+    bins = np.arange(min_possible - 0.5, max_possible + 1.5, 1)
+    plt.hist(samples, bins=bins, density=True, alpha=0.75)
+
+    total_range = max_possible - min_possible
+    step = max(1, int(np.ceil(total_range / 9)))
+    ticks = range(min_possible, max_possible + 1, step)
+
+    plt.xticks(ticks)
+    plt.xlabel("Sum of Dice Value")
+    plt.ylabel("Probability Density")
+    plt.title(
+        f"Distribution of Rolling {number_of_dice} Dice ({number_of_samples} samples)\n"
+        f"Theoretical Mean: {theoretical_mean:.2f} | Variance: {theoretical_variance:.2f}"
+    )
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    plt.show()
+
+
 def animate_random_transport_pairs(
     source,
     target,
