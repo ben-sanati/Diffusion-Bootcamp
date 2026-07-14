@@ -421,8 +421,8 @@ def animate_vector_field(
     )
 
 def animate_pixel_colour(rainbow_centroids=None):
-    single_source_color = np.array([1.0, 0.0, 1.0]) 
-    single_target_color = np.array([0.0, 1.0, 0.0]) 
+    single_source_color = np.array([1.0, 1.0, 0.0]) 
+    single_target_color = np.array([0.0, 0.0, 1.0]) 
     
     n_anim_steps_pixel = 100
     trajectory_single_pixel_colors = []
