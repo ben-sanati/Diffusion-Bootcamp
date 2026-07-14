@@ -150,7 +150,7 @@ def plot_field(history, source, target):
 
 
 def sample_dice(number_of_samples=1000, number_of_dice=1):
-    rolls = np.random.randint(1, 7, size=(number_of_samples, number_of_dice))
+    rolls = np.random.randint(1, 7, size=(int(number_of_samples), number_of_dice))
     samples = np.sum(rolls, axis=1)
 
     theoretical_mean = number_of_dice * 3.5
