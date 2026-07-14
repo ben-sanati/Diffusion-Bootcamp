@@ -230,7 +230,6 @@ def animate_random_transport_pairs(
         z,
         levels=15,
         cmap="Blues",
-        alpha=0.25,
         zorder=0
     )
     # ---------------------------------
