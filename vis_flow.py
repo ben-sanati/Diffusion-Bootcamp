@@ -420,20 +420,17 @@ def animate_vector_field(
         ani.to_jshtml()
     )
 
-
-def animate_pixel_colour(rainbow_centroids):
-    single_source_color = np.random.rand(3) # Shape (3,) for R, G, B
-    
-    target_idx = np.random.randint(0, len(rainbow_centroids))
-    single_target_color = rainbow_centroids[target_idx] # Shape (3,)
+def animate_pixel_colour(rainbow_centroids=None):
+    single_source_color = np.array([1.0, 0.0, 1.0]) 
+    single_target_color = np.array([0.0, 1.0, 0.0]) 
     
     n_anim_steps_pixel = 100
     trajectory_single_pixel_colors = []
     for i in range(n_anim_steps_pixel):
-      t = i / (n_anim_steps_pixel - 1)
-      interp_color = (1 - t) * single_source_color + t * single_target_color
-      interp_color = np.clip(interp_color, 0, 1) # Ensure RGB values are within [0, 1]
-      trajectory_single_pixel_colors.append(interp_color)
+        t = i / (n_anim_steps_pixel - 1)
+        interp_color = (1 - t) * single_source_color + t * single_target_color
+        interp_color = np.clip(interp_color, 0, 1) # Ensure RGB values are within [0, 1]
+        trajectory_single_pixel_colors.append(interp_color)
     trajectory_single_pixel_colors = np.array(trajectory_single_pixel_colors) # Convert list to numpy array (n_steps, 3)
     
     fig = plt.figure(figsize=(12, 6))
@@ -470,26 +467,27 @@ def animate_pixel_colour(rainbow_centroids):
     plt.tight_layout(rect=[0, 0.03, 1, 0.95]) # Adjust layout to prevent title overlap
     
     def update_single_pixel_combined_anim(frame):
-      current_rgb = trajectory_single_pixel_colors[frame]
+        current_rgb = trajectory_single_pixel_colors[frame]
     
-      pixel_display.set_data([current_rgb.reshape(1, -1)]) # Reshape for imshow (1, 3)
-      pixel_display.set_cmap(plt.cm.colors.ListedColormap([current_rgb])) # Update colormap for correct display
+        pixel_display.set_data([current_rgb.reshape(1, -1)]) # Reshape for imshow (1, 3)
+        pixel_display.set_cmap(plt.cm.colors.ListedColormap([current_rgb])) # Update colormap for correct display
     
-      traced_path = trajectory_single_pixel_colors[:frame+1]
-      path_line.set_data_3d(traced_path[:, 0], traced_path[:, 1], traced_path[:, 2])
+        traced_path = trajectory_single_pixel_colors[:frame+1]
+        path_line.set_data_3d(traced_path[:, 0], traced_path[:, 1], traced_path[:, 2])
     
-      current_point_3d.set_data_3d([current_rgb[0]], [current_rgb[1]], [current_rgb[2]])
-      current_point_3d.set_color(current_rgb)
+        current_point_3d.set_data_3d([current_rgb[0]], [current_rgb[1]], [current_rgb[2]])
+        current_point_3d.set_color(current_rgb)
     
-      return pixel_display, path_line, current_point_3d
+        return pixel_display, path_line, current_point_3d
     
     animation_single_pixel_combined = FuncAnimation(
-      fig,
-      update_single_pixel_combined_anim,
-      frames=n_anim_steps_pixel,
-      interval=50,
-      blit=False # Blit is often tricky with 3D and dynamic elements, set to False
+        fig,
+        update_single_pixel_combined_anim,
+        frames=n_anim_steps_pixel,
+        interval=50,
+        blit=False # Blit is often tricky with 3D and dynamic elements, set to False
     )
     
     plt.close(fig) # Prevent static plot from showing twice
+    return HTML(animation_single_pixel_combined.to_jshtml())
     return HTML(animation_single_pixel_combined.to_jshtml())
