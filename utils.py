@@ -196,7 +196,6 @@ def kde(grid_size, x_rot, y_rot, xlim, ylim):
         alpha=0.7
     )
 
-
 def animate_random_transport_pairs(
     source,
     target,
@@ -252,17 +251,6 @@ def animate_random_transport_pairs(
         s=50,
         label="Source",
         zorder=1
-    )
-
-    # Target distribution
-    target_scatter = ax.scatter(
-        target_points[:, 0],
-        target_points[:, 1],
-        facecolors="none",
-        edgecolors="blue",
-        s=50,
-        label="Target",
-        zorder=2
     )
 
     # Selected points
